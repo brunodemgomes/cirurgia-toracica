@@ -20,13 +20,13 @@
 <script>
 /* Carregador do app: busca o código da página no servidor (Apps Script), guarda uma cópia no aparelho
    e usa a cópia para abrir rápido; a versão nova baixada é usada na próxima abertura.
+   Se a cópia guardada der erro e houver versão nova, recarrega sozinho (uma vez).
    Nenhum dado de paciente fica neste site. */
 (function(){
   var API="https://script.google.com/macros/s/AKfycbygrRA_43MjnJY71d68xEeEY_1cU8Li0EIXONTtiH0KVl7lROmW47Wrmj_ZSXrRJfg6/exec", K='toraxreg.fonte';
-  var HEAD="<meta name=\"theme-color\" content=\"#182227\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Cirurgia Torácica\">\n<link rel=\"manifest\" href=\"manifest.webmanifest\">\n<link rel=\"apple-touch-icon\" href=\"icon-180.png\">\n<link rel=\"icon\" href=\"icon-192.png\">\n<meta name=\"referrer\" content=\"strict-origin-when-cross-origin\">\n<script>window.APP_CFG={\"api\":\"https://script.google.com/macros/s/AKfycbygrRA_43MjnJY71d68xEeEY_1cU8Li0EIXONTtiH0KVl7lROmW47Wrmj_ZSXrRJfg6/exec\",\"clientId\":\"953943585844-6vhv00f0qpjd35dk731k8k28e29a7e4b.apps.googleusercontent.com\"};window.addEventListener('error',function(e){try{var d=document.createElement('div');d.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#3a1f22;color:#ef8a92;padding:10px;border-radius:8px;font:12px system-ui';d.textContent='Erro: '+(e.message||e)+' ('+(e.lineno||'')+')';(document.body||document.documentElement).appendChild(d);}catch(_){}});<\/script>\n";
+  var HEAD="<meta name=\"theme-color\" content=\"#182227\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Cirurgia Torácica\">\n<link rel=\"manifest\" href=\"manifest.webmanifest\">\n<link rel=\"apple-touch-icon\" href=\"icon-180.png\">\n<link rel=\"icon\" href=\"icon-192.png\">\n<meta name=\"referrer\" content=\"strict-origin-when-cross-origin\">\n<script>window.APP_CFG={\"api\":\"https://script.google.com/macros/s/AKfycbygrRA_43MjnJY71d68xEeEY_1cU8Li0EIXONTtiH0KVl7lROmW47Wrmj_ZSXrRJfg6/exec\",\"clientId\":\"953943585844-6vhv00f0qpjd35dk731k8k28e29a7e4b.apps.googleusercontent.com\"};window.addEventListener('error',function(e){window.__appErro=true;try{if(window.__novaFonte&&!sessionStorage.getItem('toraxreg.rl')){sessionStorage.setItem('toraxreg.rl','1');location.reload();return;}}catch(_){}try{var d=document.createElement('div');d.style.cssText='position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;background:#3a1f22;color:#ef8a92;padding:10px;border-radius:8px;font:12px system-ui';d.textContent='Erro: '+(e.message||e)+' ('+(e.lineno||'')+') — feche e abra o app de novo';(document.body||document.documentElement).appendChild(d);}catch(_){}});<\/script>\n";
   var A='<meta name="viewport" content="width=device-width, initial-scale=1">';
   function mostra(src){
-    /* no iPhone o document.open() pode não limpar a página: remove a tela "Carregando" antes */
     var l=document.getElementById('l'); if(l&&l.parentNode) l.parentNode.removeChild(l);
     document.open(); document.write(src.replace(A, A+HEAD)); document.close();
     l=document.getElementById('l'); if(l&&l.parentNode) l.parentNode.removeChild(l);
@@ -34,7 +34,10 @@
   var c=null; try{ c=localStorage.getItem(K); }catch(e){}
   var f=fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:'{"fn":"_fonte"}'})
     .then(function(r){ return r.json(); })
-    .then(function(j){ if(j&&j.ok&&j.result){ try{ localStorage.setItem(K,j.result); }catch(e){} return j.result; } throw new Error('x'); });
+    .then(function(j){ if(j&&j.ok&&j.result){ try{ localStorage.setItem(K,j.result); }catch(e){}
+      if(c&&j.result!==c){ window.__novaFonte=true; try{ if(window.__appErro&&!sessionStorage.getItem('toraxreg.rl')){ sessionStorage.setItem('toraxreg.rl','1'); location.reload(); } }catch(e){} }
+      else { try{ sessionStorage.removeItem('toraxreg.rl'); }catch(e){} }
+      return j.result; } throw new Error('x'); });
   if(c) mostra(c);
   else f.then(mostra).catch(function(){ var l=document.getElementById('l'); if(l) l.innerHTML='Sem conexão com o servidor.<br>Verifique a internet e abra de novo.'; });
 })();
