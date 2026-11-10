@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#182227">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Cirurgia Torácica">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Registro de Cirurgia Torácica</title>
+<style>html,body{margin:0;background:#11181c;color:#9aabb3;font:15px system-ui,-apple-system,sans-serif}#l{display:flex;height:100vh;align-items:center;justify-content:center;text-align:center;padding:20px}</style>
+</head>
+<body>
+<div id="l">Carregando…</div>
+<script>
+/* Carregador do app: busca o código da página no servidor (Apps Script), guarda uma cópia no aparelho
+   e usa a cópia para abrir rápido; a versão nova baixada é usada na próxima abertura.
+   Nenhum dado de paciente fica neste site. */
+(function(){
+  var API="https://script.google.com/macros/s/AKfycbygrRA_43MjnJY71d68xEeEY_1cU8Li0EIXONTtiH0KVl7lROmW47Wrmj_ZSXrRJfg6/exec", K='toraxreg.fonte';
+  var HEAD="<meta name=\"theme-color\" content=\"#182227\">\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\">\n<meta name=\"mobile-web-app-capable\" content=\"yes\">\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black\">\n<meta name=\"apple-mobile-web-app-title\" content=\"Cirurgia Torácica\">\n<link rel=\"manifest\" href=\"manifest.webmanifest\">\n<link rel=\"apple-touch-icon\" href=\"icon-180.png\">\n<link rel=\"icon\" href=\"icon-192.png\">\n<meta name=\"referrer\" content=\"strict-origin-when-cross-origin\">\n<script>window.APP_CFG={\"api\":\"https://script.google.com/macros/s/AKfycbygrRA_43MjnJY71d68xEeEY_1cU8Li0EIXONTtiH0KVl7lROmW47Wrmj_ZSXrRJfg6/exec\",\"clientId\":\"953943585844-6vhv00f0qpjd35dk731k8k28e29a7e4b.apps.googleusercontent.com\"};<\/script>\n";
+  var A='<meta name="viewport" content="width=device-width, initial-scale=1">';
+  function mostra(src){ document.open(); document.write(src.replace(A, A+HEAD)); document.close(); }
+  var c=null; try{ c=localStorage.getItem(K); }catch(e){}
+  var f=fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:'{"fn":"_fonte"}'})
+    .then(function(r){ return r.json(); })
+    .then(function(j){ if(j&&j.ok&&j.result){ try{ localStorage.setItem(K,j.result); }catch(e){} return j.result; } throw new Error('x'); });
+  if(c) mostra(c);
+  else f.then(mostra).catch(function(){ document.getElementById('l').innerHTML='Sem conexão com o servidor.<br>Verifique a internet e abra de novo.'; });
+})();
+</script>
+</body>
+</html>
